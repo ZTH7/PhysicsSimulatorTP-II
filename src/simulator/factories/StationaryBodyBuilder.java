@@ -9,20 +9,22 @@ import simulator.model.StationaryBody;
 
 public class StationaryBodyBuilder extends Builder<Body> {
 
-	public StationaryBodyBuilder(String typeTag, String desc) {
+	public StationaryBodyBuilder() {
 		super("st_body", "StationaryBody");
 	}
 
 	@Override
 	protected Body createInstance(JSONObject data) {
+		if(!data.has("id") || !data.has("gid") || !data.has("p") || !data.has("m"))
+			throw new IllegalArgumentException();
+		
 		String id = data.getString("id"), gid = data.getString("gid");
-		JSONArray _p = data.getJSONArray("p");
-		
-		Vector2D p = new Vector2D(_p.getDouble(0), _p.getDouble(1));
-		
+		JSONArray p = data.getJSONArray("p");
 		double m = data.getDouble("m");
 		
-		return new StationaryBody(id, gid, p, m);
+		if(p.length() != 2 ) throw new IllegalArgumentException();
+		
+		return new StationaryBody(id, gid, new Vector2D(p.getDouble(0), p.getDouble(1)), m);
 	}
 
 }

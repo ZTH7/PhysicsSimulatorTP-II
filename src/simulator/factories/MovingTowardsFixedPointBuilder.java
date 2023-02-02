@@ -9,16 +9,19 @@ import simulator.model.MovingTowardsFixedPoint;
 
 public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
 
-	public MovingTowardsFixedPointBuilder(String typeTag, String desc) {
-		super("mtfp", "MovingTowardsFixedPoint");
+	public MovingTowardsFixedPointBuilder() {
+		super("mtfp", "Moving towards a fixed point");
 	}
 
 	@Override
 	protected ForceLaws createInstance(JSONObject data) {
-		JSONArray _c = data.getJSONArray("c");
-		Vector2D c = new Vector2D(_c.getDouble(0), _c.getDouble(1));
+		Vector2D c = new Vector2D();
+		if(data.has("c")) {
+			JSONArray _c = data.getJSONArray("c");
+			c = new Vector2D(_c.getDouble(0), _c.getDouble(1));
+		}
 		
-		return new MovingTowardsFixedPoint(c, data.getDouble("g"));
+		return new MovingTowardsFixedPoint(c, data.has("g") ? data.getDouble("g") : 9.81);
 	}
 	
 }

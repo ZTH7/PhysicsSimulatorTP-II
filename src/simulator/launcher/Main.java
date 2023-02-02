@@ -1,5 +1,11 @@
 package simulator.launcher;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -9,9 +15,11 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.json.JSONObject;
 
-import simulator.factories.Factory;
+import simulator.control.Controller;
+import simulator.factories.*;
 import simulator.model.Body;
 import simulator.model.ForceLaws;
+import simulator.model.PhysicsSimulator;
 
 
 public class Main {
@@ -35,6 +43,16 @@ public class Main {
 	private static Factory<ForceLaws> _forceLawsFactory;
 
 	private static void initFactories() {
+		ArrayList<Builder<Body>> bodyBuilders = new ArrayList<>();
+		bodyBuilders.add(new MovingBodyBuilder());
+		bodyBuilders.add(new StationaryBodyBuilder());
+		_bodyFactory = new BuilderBasedFactory<Body>(bodyBuilders);
+		
+		ArrayList<Builder<ForceLaws>> forceLawsBuilders = new ArrayList<>();
+		forceLawsBuilders.add(new NewtonUniversalGravitationBuilder());
+		forceLawsBuilders.add(new MovingTowardsFixedPointBuilder());
+		forceLawsBuilders.add(new NoForceBuilder());
+		_forceLawsFactory = new BuilderBasedFactory<ForceLaws>(forceLawsBuilders);
 
 	}
 
@@ -51,7 +69,9 @@ public class Main {
 			CommandLine line = parser.parse(cmdLineOptions, args);
 			parseHelpOption(line, cmdLineOptions);
 			parseInFileOption(line);
+			parseOutFileOption(line);
 			parseDeltaTimeOption(line);
+			parseStepOption(line);
 			parseForceLawsOption(line);
 
 			// if there are some remaining arguments, then something wrong is
@@ -80,13 +100,22 @@ public class Main {
 
 		// input file
 		cmdLineOptions.addOption(Option.builder("i").longOpt("input").hasArg().desc("Bodies JSON input file.").build());
+		
+		// output file
+		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg().desc("Bodies JSON output file.").build());
 
 		// delta-time
 		cmdLineOptions.addOption(Option.builder("dt").longOpt("delta-time").hasArg()
 				.desc("A double representing actual time, in seconds, per simulation step. Default value: "
 						+ _dtimeDefaultValue + ".")
 				.build());
-
+		
+		// steps
+		cmdLineOptions.addOption(Option.builder("s").longOpt("steps").hasArg()
+				.desc("An integer representing the number of simulation steps. Default value: "
+						+ _stepsDefaultValue + ".")
+				.build());
+				
 		// force laws
 		cmdLineOptions.addOption(Option.builder("fl").longOpt("force-laws").hasArg()
 				.desc("Force laws to be used in the simulator. Possible values: "
@@ -129,6 +158,10 @@ public class Main {
 			throw new ParseException("In batch mode an input file of bodies is required");
 		}
 	}
+	
+	private static void parseOutFileOption(CommandLine line) throws ParseException {
+		_outFile = line.getOptionValue("o");
+	}
 
 	private static void parseDeltaTimeOption(CommandLine line) throws ParseException {
 		String dt = line.getOptionValue("dt", _dtimeDefaultValue.toString());
@@ -137,6 +170,16 @@ public class Main {
 			assert (_dtime > 0);
 		} catch (Exception e) {
 			throw new ParseException("Invalid delta-time value: " + dt);
+		}
+	}
+	
+	private static void parseStepOption(CommandLine line) throws ParseException {
+		String steps = line.getOptionValue("s", _stepsDefaultValue.toString());
+		try {
+			_steps = Integer.parseInt(steps);
+			assert (_steps > 0);
+		} catch (Exception e) {
+			throw new ParseException("Invalid step value: " + steps);
 		}
 	}
 
@@ -189,6 +232,13 @@ public class Main {
 	}
 
 	private static void startBatchMode() throws Exception {
+		PhysicsSimulator ps = new PhysicsSimulator(_forceLawsFactory.createInstance(_forceLawsInfo), _dtime);
+		InputStream in = new FileInputStream(_inFile);
+		OutputStream out = _outFile == null ? System.out : new FileOutputStream(_outFile);
+		Controller ctrl = new Controller(ps,_forceLawsFactory, _bodyFactory);
+		
+		ctrl.loadData(in);
+		ctrl.run(_steps, out);
 	}
 
 	private static void start(String[] args) throws Exception {

@@ -14,14 +14,14 @@ public abstract class Body {
 	
 	public Body() {}
 	
-	public Body(String id, String gid, Vector2D v, Vector2D p, double m) {
-		if(id == null || gid == null || v == null || p == null || id.trim().length() == 0 || gid.trim().length() == 0 || m < 0)
+	public Body(String id, String gid, Vector2D p, Vector2D v, double m) {
+		if(id == null || gid == null || v == null || p == null || id.trim().length() == 0 || gid.trim().length() == 0 || m <= 0)
 			throw new IllegalArgumentException();
 		
 		this.id = id;
 		this.gid = gid;
-		this.v = v;
 		this.p = p;
+		this.v = v;
 		this.m = m;
 		this.f = new Vector2D();
 	}
@@ -51,7 +51,7 @@ public abstract class Body {
 	}
 	
 	void addForce(Vector2D f) {
-		this.f.plus(f);
+		this.f = this.f.plus(f);
 	}
 	
 	void resetForce() {

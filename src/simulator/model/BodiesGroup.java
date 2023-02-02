@@ -1,5 +1,6 @@
 package simulator.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ public class BodiesGroup {
 		if(id == null || laws == null || id.trim().length() == 0) throw new IllegalArgumentException();
 		this.id = id;
 		this.laws = laws;
+		this.bodies = new ArrayList<>();
 	}
 	
 	public String getId() { return id; }
@@ -31,6 +33,8 @@ public class BodiesGroup {
 	}
 	
 	void advance(double dt) {
+		if(dt <= 0) throw new IllegalArgumentException();
+		
 		bodies.forEach(body -> body.resetForce());
 		laws.apply(bodies);
 		bodies.forEach(body -> body.advance(dt));
