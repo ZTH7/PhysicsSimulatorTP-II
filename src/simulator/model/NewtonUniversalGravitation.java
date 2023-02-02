@@ -21,7 +21,7 @@ public class NewtonUniversalGravitation implements ForceLaws {
 				if(body1 != body2) {
 					if ((dist = (distance = body2.getPosition().minus(body1.getPosition())).magnitude()) > 0) {
 						f = G * body1.getMass() * body2.getMass() / (dist * dist);
-						body1.addForce(distance.scale(f / dist));
+						body1.addForce(distance.scale(1.0 / dist).scale(f));
 					}
 				}
 			}

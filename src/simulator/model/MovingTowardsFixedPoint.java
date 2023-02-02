@@ -18,7 +18,7 @@ public class MovingTowardsFixedPoint implements ForceLaws {
 	public void apply(List<Body> bs) {
 		bs.forEach(body -> {
 			Vector2D dist = c.minus(body.getPosition());
-			body.addForce(dist.scale(g * body.getMass() / dist.magnitude()));
+			body.addForce(dist.scale(1.0 / dist.magnitude()).scale(g * body.getMass()));
 		});
 	}
 

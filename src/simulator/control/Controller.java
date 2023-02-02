@@ -28,9 +28,10 @@ public class Controller {
 		PrintStream p = new PrintStream(out);
 		p.println("{");
 		p.println("\"states\": [");
+		p.println(ps.toString());
 		for(int i = 0; i < n; i++) {
 			ps.advance();
-			p.println(ps.toString());
+			p.println(',' + ps.toString());
 		}
 		p.println("]");
 		p.println("}");

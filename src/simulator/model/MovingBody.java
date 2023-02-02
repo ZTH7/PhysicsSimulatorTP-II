@@ -12,7 +12,7 @@ public class MovingBody extends Body {
 	
 	@Override
 	void advance(double dt) {
-		Vector2D a = f.scale(1/m);
+		Vector2D a = f.scale(1.0 / m);
 		p = p.plus(v.scale(dt)).plus(a.scale(dt * dt / 2));
 		v = v.plus(a.scale(dt));
 	}

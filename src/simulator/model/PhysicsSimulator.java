@@ -1,5 +1,6 @@
 package simulator.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ public class PhysicsSimulator {
 		if(time < 0 || laws == null) throw new IllegalArgumentException();
 		this.realtime = time;
 		this.laws = laws;
+		this.groups = new HashMap<>();
 	}
 	
 	public void advance() {
