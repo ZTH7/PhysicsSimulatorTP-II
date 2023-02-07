@@ -14,18 +14,18 @@ public class NewtonUniversalGravitation implements ForceLaws {
 	
 	@Override
 	public void apply(List<Body> bs) {
-		double dist, f;
-		Vector2D distance;
 		for(Body body1 : bs) {
 			for(Body body2 : bs) {
 				if(body1 != body2) {
-					if ((dist = (distance = body2.getPosition().minus(body1.getPosition())).magnitude()) > 0) {
-						f = G * body1.getMass() * body2.getMass() / (dist * dist);
-						body1.addForce(distance.scale(1.0 / dist).scale(f));
+					double dis = body1.getPosition().distanceTo(body2.getPosition());
+					
+					if(dis > 0) {
+						Vector2D d = body2.getPosition().minus(body1.getPosition()).direction();
+						double f = G * body1.getMass() * body2.getMass() / (dis * dis);
+						body1.addForce(d.scale(f));
 					}
 				}
 			}
 		}
 	}
-
 }
