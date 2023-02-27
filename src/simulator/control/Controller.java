@@ -17,19 +17,19 @@ public class Controller {
 	private PhysicsSimulator ps;
 	private Factory<ForceLaws> ff;
 	private Factory<Body> fb;
-	
+
 	public Controller(PhysicsSimulator ps, Factory<ForceLaws> ff, Factory<Body> fb) {
 		this.ps = ps;
 		this.ff = ff;
 		this.fb = fb;
 	}
 
-	public void run(int n, OutputStream out) {	
+	public void run(int n, OutputStream out) {
 		PrintStream p = new PrintStream(out);
 		p.println("{");
 		p.println("\"states\": [");
 		p.println(ps.toString());
-		for(int i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++) {
 			ps.advance();
 			p.println(',' + ps.toString());
 		}
@@ -38,14 +38,27 @@ public class Controller {
 	}
 
 	public void loadData(InputStream in) {
-		JSONObject jsonInupt = new JSONObject(new JSONTokener(in));
-		JSONArray groups = jsonInupt.getJSONArray("groups");
-		JSONArray laws = jsonInupt.getJSONArray("laws");
-		JSONArray bodies = jsonInupt.getJSONArray("bodies");
+		JSONObject jsonInput = new JSONObject(new JSONTokener(in));
 
-		groups.forEach(group -> ps.addGroup(group.toString()));
-		laws.forEach(law -> ps.setForceLaws(((JSONObject)law).getString("id"), ff.createInstance(((JSONObject)law).getJSONObject("laws"))));
-		bodies.forEach(body -> ps.addBody(fb.createInstance((JSONObject)body)));
+		if (jsonInput.has("groups")) {
+			JSONArray groups = jsonInput.getJSONArray("groups");
+			groups.forEach(group -> ps.addGroup(group.toString()));
+		} else
+			throw new IllegalArgumentException("Es obligatorio indicar los grupos.");
+
+		if (jsonInput.has("laws")) {
+			JSONArray laws = jsonInput.getJSONArray("laws");
+			laws.forEach(law -> {
+				ForceLaws fl = ff.createInstance(((JSONObject) law).getJSONObject("laws"));
+				ps.setForceLaws(((JSONObject) law).getString("id"), fl);
+			});
+		}
+
+		if (jsonInput.has("bodies")) {
+			JSONArray bodies = jsonInput.getJSONArray("bodies");
+			bodies.forEach(body -> ps.addBody(fb.createInstance((JSONObject) body)));
+		} else
+			throw new IllegalArgumentException("Es obligatorio indicar los cuerpos.");
 	}
 
 }

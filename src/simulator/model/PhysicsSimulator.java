@@ -9,37 +9,44 @@ import org.json.JSONObject;
 public class PhysicsSimulator {
 	double realtime, actualtime = 0;
 	ForceLaws laws;
-	Map<String,BodiesGroup> groups;
-	
+	Map<String, BodiesGroup> groups;
+
 	public PhysicsSimulator(ForceLaws laws, double time) {
-		if(time < 0 || laws == null) throw new IllegalArgumentException();
+		if (time < 0)
+			throw new IllegalArgumentException("El valor de tiempo real no sea válido");
+		if (laws == null)
+			throw new IllegalArgumentException("El valor de ForceLaws es null");
+
 		this.realtime = time;
 		this.laws = laws;
 		this.groups = new HashMap<>();
 	}
-	
+
 	public void advance() {
 		groups.values().forEach(group -> group.advance(realtime));
 		actualtime += realtime;
 	}
-	
+
 	public void addGroup(String id) {
-		if (groups.get(id) != null) throw new IllegalArgumentException();
+		if (groups.get(id) != null)
+			throw new IllegalArgumentException("No existe este group id");
 		groups.put(id, new BodiesGroup(id, this.laws));
 	}
-	
+
 	public void addBody(Body b) {
 		BodiesGroup bg = groups.get(b.getgId());
-		if(bg == null) throw new IllegalArgumentException();
+		if (bg == null)
+			throw new IllegalArgumentException("El group id de este cuerpo no existe");
 		bg.addBody(b);
 	}
-	
+
 	public void setForceLaws(String id, ForceLaws fl) {
 		BodiesGroup bg = groups.get(id);
-		if(bg == null) throw new IllegalArgumentException();
+		if (bg == null)
+			throw new IllegalArgumentException("No existe este group id");
 		bg.setForceLaws(fl);
 	}
-	
+
 	public JSONObject getState() {
 		JSONObject jo = new JSONObject();
 		JSONArray ja = new JSONArray();
@@ -48,10 +55,10 @@ public class PhysicsSimulator {
 		jo.put("groups", ja);
 		return jo;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getState().toString();
 	}
-	
+
 }

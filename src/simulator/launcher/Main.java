@@ -21,7 +21,6 @@ import simulator.model.Body;
 import simulator.model.ForceLaws;
 import simulator.model.PhysicsSimulator;
 
-
 public class Main {
 
 	// default values for some parameters
@@ -47,7 +46,7 @@ public class Main {
 		bodyBuilders.add(new MovingBodyBuilder());
 		bodyBuilders.add(new StationaryBodyBuilder());
 		_bodyFactory = new BuilderBasedFactory<Body>(bodyBuilders);
-		
+
 		ArrayList<Builder<ForceLaws>> forceLawsBuilders = new ArrayList<>();
 		forceLawsBuilders.add(new NewtonUniversalGravitationBuilder());
 		forceLawsBuilders.add(new MovingTowardsFixedPointBuilder());
@@ -99,22 +98,22 @@ public class Main {
 
 		// input file
 		cmdLineOptions.addOption(Option.builder("i").longOpt("input").hasArg().desc("Bodies JSON input file.").build());
-		
+
 		// output file
-		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg().desc("Output file, where output is written. Default value: the standard output.").build());
+		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg()
+				.desc("Output file, where output is written. Default value: the standard output.").build());
 
 		// delta-time
 		cmdLineOptions.addOption(Option.builder("dt").longOpt("delta-time").hasArg()
 				.desc("A double representing actual time, in seconds, per simulation step. Default value: "
 						+ _dtimeDefaultValue + ".")
 				.build());
-		
+
 		// steps
-		cmdLineOptions.addOption(Option.builder("s").longOpt("steps").hasArg()
-				.desc("An integer representing the number of simulation steps. Default value: "
-						+ _stepsDefaultValue + ".")
+		cmdLineOptions.addOption(Option.builder("s").longOpt("steps").hasArg().desc(
+				"An integer representing the number of simulation steps. Default value: " + _stepsDefaultValue + ".")
 				.build());
-				
+
 		// force laws
 		cmdLineOptions.addOption(Option.builder("fl").longOpt("force-laws").hasArg()
 				.desc("Force laws to be used in the simulator. Possible values: "
@@ -157,7 +156,7 @@ public class Main {
 			throw new ParseException("In batch mode an input file of bodies is required");
 		}
 	}
-	
+
 	private static void parseOutFileOption(CommandLine line) throws ParseException {
 		_outFile = line.getOptionValue("o");
 	}
@@ -171,7 +170,7 @@ public class Main {
 			throw new ParseException("Invalid delta-time value: " + dt);
 		}
 	}
-	
+
 	private static void parseStepOption(CommandLine line) throws ParseException {
 		String steps = line.getOptionValue("s", _stepsDefaultValue.toString());
 		try {
@@ -234,8 +233,8 @@ public class Main {
 		PhysicsSimulator ps = new PhysicsSimulator(_forceLawsFactory.createInstance(_forceLawsInfo), _dtime);
 		InputStream in = new FileInputStream(_inFile);
 		OutputStream out = _outFile == null ? System.out : new FileOutputStream(_outFile);
-		Controller ctrl = new Controller(ps,_forceLawsFactory, _bodyFactory);
-		
+		Controller ctrl = new Controller(ps, _forceLawsFactory, _bodyFactory);
+
 		ctrl.loadData(in);
 		ctrl.run(_steps, out);
 	}

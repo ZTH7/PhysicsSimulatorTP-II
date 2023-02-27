@@ -10,36 +10,50 @@ public class BodiesGroup {
 	private String id;
 	private ForceLaws laws;
 	private List<Body> bodies;
-	
+
 	public BodiesGroup(String id, ForceLaws laws) {
-		if(id == null || laws == null || id.trim().length() == 0) throw new IllegalArgumentException();
+		if (id == null || laws == null)
+			throw new IllegalArgumentException("Cualquier parámetro es null");
+
+		if (id.trim().length() == 0)
+			throw new IllegalArgumentException("El id no incluye al menos un carćter que no sea espacio en blanco");
+
 		this.id = id;
 		this.laws = laws;
 		this.bodies = new ArrayList<>();
 	}
-	
-	public String getId() { return id; }
-	
+
+	public String getId() {
+		return id;
+	}
+
 	void setForceLaws(ForceLaws fl) {
-		if(fl == null) throw new IllegalArgumentException();
+		if (fl == null)
+			throw new IllegalArgumentException("El parámetro forcelaws es null");
 		this.laws = fl;
 	}
-	
+
 	void addBody(Body b) {
-		if(b == null) throw new IllegalArgumentException();
-		for(Body tmp : bodies) if(tmp.getId().equals(b.getId())) throw new IllegalArgumentException();
-		
+		if (b == null)
+			throw new IllegalArgumentException("El parámetro body es null");
+
+		for (Body tmp : bodies) {
+			if (tmp.getId().equals(b.getId()))
+				throw new IllegalArgumentException("Existe otro cuerpo en el grupo con el mismo identificador");
+		}
+
 		bodies.add(b);
 	}
-	
+
 	void advance(double dt) {
-		if(dt <= 0) throw new IllegalArgumentException();
-		
+		if (dt <= 0)
+			throw new IllegalArgumentException("El valor de dt no sea positivo.");
+
 		bodies.forEach(body -> body.resetForce());
 		laws.apply(bodies);
 		bodies.forEach(body -> body.advance(dt));
 	}
-	
+
 	public JSONObject getState() {
 		JSONObject jo = new JSONObject();
 		JSONArray ja = new JSONArray();
@@ -48,7 +62,7 @@ public class BodiesGroup {
 		jo.put("bodies", ja);
 		return jo;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getState().toString();
