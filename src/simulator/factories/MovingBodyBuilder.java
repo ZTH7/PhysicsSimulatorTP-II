@@ -14,7 +14,7 @@ public class MovingBodyBuilder extends Builder<Body> {
 	}
 
 	@Override
-	protected Body createInstance(JSONObject data) {
+	protected MovingBody createInstance(JSONObject data) {
 		if (!data.has("id") || !data.has("gid") || !data.has("v") || !data.has("p") || !data.has("m"))
 			throw new IllegalArgumentException("Falta uno o mas argumentos.");
 

@@ -14,7 +14,7 @@ public class StationaryBodyBuilder extends Builder<Body> {
 	}
 
 	@Override
-	protected Body createInstance(JSONObject data) {
+	protected StationaryBody createInstance(JSONObject data) {
 		if (!data.has("id") || !data.has("gid") || !data.has("p") || !data.has("m"))
 			throw new IllegalArgumentException("Falta uno o mas argumentos.");
 

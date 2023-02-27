@@ -14,7 +14,7 @@ public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
 	}
 
 	@Override
-	protected ForceLaws createInstance(JSONObject data) {
+	protected MovingTowardsFixedPoint createInstance(JSONObject data) {
 		Vector2D c = new Vector2D();
 		
 		if (data.has("c")) {

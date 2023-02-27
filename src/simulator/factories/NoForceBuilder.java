@@ -12,7 +12,7 @@ public class NoForceBuilder extends Builder<ForceLaws> {
 	}
 
 	@Override
-	protected ForceLaws createInstance(JSONObject data) {
+	protected NoForce createInstance(JSONObject data) {
 		return new NoForce();
 	}
 
