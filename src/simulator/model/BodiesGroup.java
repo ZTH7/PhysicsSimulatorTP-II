@@ -30,6 +30,7 @@ public class BodiesGroup {
 	void setForceLaws(ForceLaws fl) {
 		if (fl == null)
 			throw new IllegalArgumentException("El parámetro forcelaws es null");
+
 		this.laws = fl;
 	}
 
@@ -37,10 +38,8 @@ public class BodiesGroup {
 		if (b == null)
 			throw new IllegalArgumentException("El parámetro body es null");
 
-		for (Body tmp : bodies) {
-			if (tmp.getId().equals(b.getId()))
-				throw new IllegalArgumentException("Existe otro cuerpo en el grupo con el mismo identificador");
-		}
+		if (bodies.contains(b))
+			throw new IllegalArgumentException("Existe otro cuerpo en el grupo con el mismo identificador");
 
 		bodies.add(b);
 	}

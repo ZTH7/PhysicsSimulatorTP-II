@@ -19,6 +19,10 @@ public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
 		
 		if (data.has("c")) {
 			JSONArray _c = data.getJSONArray("c");
+			
+			if (_c.length() != 2)
+				throw new IllegalArgumentException("El argumento c no es un Vector2D");
+			
 			c = new Vector2D(_c.getDouble(0), _c.getDouble(1));
 		}
 

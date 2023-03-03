@@ -40,11 +40,17 @@ public class Controller {
 	public void loadData(InputStream in) {
 		JSONObject jsonInput = new JSONObject(new JSONTokener(in));
 
-		if (jsonInput.has("groups")) {
-			JSONArray groups = jsonInput.getJSONArray("groups");
-			groups.forEach(group -> ps.addGroup(group.toString()));
-		} else
+		if (!jsonInput.has("groups"))
 			throw new IllegalArgumentException("Es obligatorio indicar los grupos.");
+
+		if (!jsonInput.has("bodies"))
+			throw new IllegalArgumentException("Es obligatorio indicar los cuerpos.");
+
+		JSONArray groups = jsonInput.getJSONArray("groups");
+		groups.forEach(group -> ps.addGroup(group.toString()));
+
+		JSONArray bodies = jsonInput.getJSONArray("bodies");
+		bodies.forEach(body -> ps.addBody(fb.createInstance((JSONObject) body)));
 
 		if (jsonInput.has("laws")) {
 			JSONArray laws = jsonInput.getJSONArray("laws");
@@ -54,11 +60,6 @@ public class Controller {
 			});
 		}
 
-		if (jsonInput.has("bodies")) {
-			JSONArray bodies = jsonInput.getJSONArray("bodies");
-			bodies.forEach(body -> ps.addBody(fb.createInstance((JSONObject) body)));
-		} else
-			throw new IllegalArgumentException("Es obligatorio indicar los cuerpos.");
 	}
 
 }

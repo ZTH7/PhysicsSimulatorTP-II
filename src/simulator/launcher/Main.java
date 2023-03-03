@@ -237,6 +237,9 @@ public class Main {
 
 		ctrl.loadData(in);
 		ctrl.run(_steps, out);
+
+		if (_outFile != null)
+			out.close();
 	}
 
 	private static void start(String[] args) throws Exception {

@@ -76,5 +76,13 @@ public abstract class Body {
 		return getState().toString();
 	}
 
+	@Override
+	public boolean equals(Object anObject) {
+		if (getClass() != anObject.getClass())
+			return false;
+
+		return this.id.equals(((Body) anObject).getId());
+	}
+
 	abstract void advance(double dt);
 }
