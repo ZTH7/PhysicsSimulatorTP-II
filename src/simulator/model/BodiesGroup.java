@@ -1,15 +1,18 @@
 package simulator.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class BodiesGroup {
+public class BodiesGroup implements Iterable<Body> {
 	private String id;
 	private ForceLaws laws;
 	private List<Body> bodies;
+	List<Body> _bodiesRO;
 
 	public BodiesGroup(String id, ForceLaws laws) {
 		if (id == null || laws == null)
@@ -21,6 +24,8 @@ public class BodiesGroup {
 		this.id = id;
 		this.laws = laws;
 		this.bodies = new ArrayList<>();
+		this._bodiesRO = Collections.unmodifiableList(bodies);
+
 	}
 
 	public String getId() {
@@ -65,6 +70,15 @@ public class BodiesGroup {
 	@Override
 	public String toString() {
 		return getState().toString();
+	}
+
+	public String getForceLawsInfo() {
+		return laws.toString();
+	}
+
+	@Override
+	public Iterator<Body> iterator() {
+		return _bodiesRO.iterator();
 	}
 
 }
