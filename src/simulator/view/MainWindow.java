@@ -1,6 +1,10 @@
 package simulator.view;
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -31,10 +35,14 @@ public class MainWindow extends JFrame {
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		mainPanel.add(contentPanel, BorderLayout.CENTER);
 
-		// TODO crear la tabla de grupos y añadirla a contentPanel.
-		// Usa setPreferredSize(new Dimension(500, 250)) para fijar su tamaño
-		// TODO crear la tabla de cuerpos y añadirla a contentPanel.
-		// Usa setPreferredSize(new Dimension(500, 250)) para fijar su tamaño
+		InfoTable groupTable = new InfoTable("Groups", new GroupsTableModel(_ctrl));
+		groupTable.setPreferredSize(new Dimension(500, 250));
+		contentPanel.add(groupTable);
+
+		InfoTable bodyTable = new InfoTable("Bodies", new BodiesTableModel(_ctrl));
+		bodyTable.setPreferredSize(new Dimension(500, 250));
+		contentPanel.add(bodyTable);
+
 		// TODO llama a Utils.quit(MainWindow.this) en el método windowClosing
 
 		// addWindowListener( … );
@@ -51,32 +59,98 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 	private JFileChooser _fc;
 	private boolean _stopped = true; // utilizado en los botones de run/stop
 	private JButton _quitButton;
+	private JButton _fileButton;
+	private JButton _forceLawsButton;
+	private JButton _viewerButton;
+	private JButton _runButton;
+	private JButton _stopButton;
 
 	// TODO añade más atributos aquí …
 	ControlPanel(Controller ctrl) {
 		_ctrl = ctrl;
 		initGUI();
-		// TODO registrar this como observador
+		ctrl.addObserver(this);
 	}
 
 	private void initGUI() {
 		setLayout(new BorderLayout());
 		_toolaBar = new JToolBar();
 		add(_toolaBar, BorderLayout.PAGE_START);
-		// TODO crear los diferentes botones/atributos y añadirlos a _toolaBar.
-		// Todos ellos han de tener su correspondiente tooltip. Puedes utilizar
-		// _toolaBar.addSeparator() para añadir la línea de separación vertical
-		// entre las componentes que lo necesiten
-		// Quit Button
+
 		_toolaBar.add(Box.createGlue()); // this aligns the button to the right
 		_toolaBar.addSeparator();
+
+		// Quit Button
 		_quitButton = new JButton();
 		_quitButton.setToolTipText("Quit");
 		_quitButton.setIcon(new ImageIcon("resources/icons/exit.png"));
 		_quitButton.addActionListener((e) -> Utils.quit(this));
 		_toolaBar.add(_quitButton);
-		// TODO crear el selector de ficheros
-		// _fc = …
+
+		// File Button
+		_fileButton = new JButton();
+		_fileButton.setToolTipText("Load an input file into SlidePuzzle");
+		_fileButton.setIcon(new ImageIcon("resources/icons/open.png"));
+		_fileButton.addActionListener((e) -> {
+			int res = _fc.showOpenDialog(Utils.getWindow(this));
+			if (res == JFileChooser.APPROVE_OPTION) {
+				try {
+					File _file = _fc.getSelectedFile();
+					_ctrl.loadData(new FileInputStream(_file));
+				} catch (Exception ex) {
+					Utils.showErrorMsg(ex.getMessage());
+				}
+			}
+		});
+		_toolaBar.add(_fileButton);
+
+		// Force Laws Button
+		_forceLawsButton = new JButton();
+		_forceLawsButton.setToolTipText("Select force laws for groups");
+		_forceLawsButton.setIcon(new ImageIcon("resources/icons/physics.png"));
+		_forceLawsButton.addActionListener((e) -> Utils.quit(this));
+		_toolaBar.add(_forceLawsButton);
+
+		// Viewer Button
+		_viewerButton = new JButton();
+		_viewerButton.setToolTipText("Open viewer window");
+		_viewerButton.setIcon(new ImageIcon("resources/icons/viewer.png"));
+		_viewerButton.addActionListener((e) -> Utils.quit(this));
+		_toolaBar.add(_viewerButton);
+
+		// Run Button
+		_runButton = new JButton();
+		_runButton.setToolTipText("Run the simulator");
+		_runButton.setIcon(new ImageIcon("resources/icons/run.png"));
+		_runButton.addActionListener((e) -> {
+			_stopped = false;
+
+			_quitButton.setEnabled(false);
+			_fileButton.setEnabled(false);
+			_forceLawsButton.setEnabled(false);
+			_viewerButton.setEnabled(false);
+			_runButton.setEnabled(false);
+		});
+		_toolaBar.add(_runButton);
+
+		// Stop Button
+		_stopButton = new JButton();
+		_stopButton.setToolTipText("Stop the simulator");
+		_stopButton.setIcon(new ImageIcon("resources/icons/stop.png"));
+		_stopButton.addActionListener((e) -> {
+			_stopped = true;
+
+			_quitButton.setEnabled(true);
+			_fileButton.setEnabled(true);
+			_forceLawsButton.setEnabled(true);
+			_viewerButton.setEnabled(true);
+			_runButton.setEnabled(true);
+		});
+		_toolaBar.add(_stopButton);
+
+		_fc = new JFileChooser(".");
+		_fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		_fc.setMultiSelectionEnabled(false);
 	}
 	// TODO el resto de métodos van aquí…
 
@@ -85,17 +159,26 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 			try {
 				_ctrl.run(1);
 			} catch (Exception e) {
-				// TODO llamar a Utils.showErrorMsg con el mensaje de error que
-				// corresponda
-				// TODO activar todos los botones
+				Utils.showErrorMsg(e.getMessage());
+
+				_quitButton.setEnabled(true);
+				_fileButton.setEnabled(true);
+				_forceLawsButton.setEnabled(true);
+				_viewerButton.setEnabled(true);
+				_runButton.setEnabled(true);
+
 				_stopped = true;
 				return;
 			}
 			SwingUtilities.invokeLater(() -> run_sim(n - 1));
 		} else {
-			// TODO llamar a Utils.showErrorMsg con el mensaje de error que
-			// corresponda
-			// TODO activar todos los botones
+			Utils.showErrorMsg("It is already stopped.");
+
+			_quitButton.setEnabled(true);
+			_fileButton.setEnabled(true);
+			_forceLawsButton.setEnabled(true);
+			_viewerButton.setEnabled(true);
+			_runButton.setEnabled(true);
 			_stopped = true;
 		}
 	}
@@ -145,28 +228,33 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 
 class StatusBar extends JPanel implements SimulatorObserver {
 	// TODO Añadir los atributos necesarios, si hace falta …
+	double _time = 0;
+	int _groups = 0;
+
 	StatusBar(Controller ctrl) {
 		initGUI();
-		// TODO registrar this como observador
+		ctrl.addObserver(this);
 	}
 
 	private void initGUI() {
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.setBorder(BorderFactory.createBevelBorder(1));
-		// TODO Crear una etiqueta de tiempo y añadirla al panel
-		// TODO Crear la etiqueta de número de grupos y añadirla al panel
-		// TODO Utilizar el siguiente código para añadir un separador vertical
-		//
-		// JSeparator s = new JSeparator(JSeparator.VERTICAL);
-		// s.setPreferredSize(new Dimension(10, 20));
-		// this.add(s);
+
+		this.add(new JLabel("Time: " + _time));
+		JSeparator s = new JSeparator(JSeparator.VERTICAL);
+		s.setPreferredSize(new Dimension(10, 20));
+		this.add(s);
+
+		this.add(new JLabel("Groups: " + _groups));
+		JSeparator s2 = new JSeparator(JSeparator.VERTICAL);
+		s2.setPreferredSize(new Dimension(10, 20));
+		this.add(s2);
 	}
 
 	// TODO el resto de métodos van aquí…
 	@Override
 	public void onAdvance(Map<String, BodiesGroup> groups, double time) {
-		// TODO Auto-generated method stub
-
+		_time = time;
 	}
 
 	@Override
@@ -183,26 +271,19 @@ class StatusBar extends JPanel implements SimulatorObserver {
 
 	@Override
 	public void onGroupAdded(Map<String, BodiesGroup> groups, BodiesGroup g) {
-		// TODO Auto-generated method stub
-
+		_groups = groups.size();
 	}
 
 	@Override
 	public void onBodyAdded(Map<String, BodiesGroup> groups, Body b) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onDeltaTimeChanged(double dt) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onForceLawsChanged(BodiesGroup g) {
-		// TODO Auto-generated method stub
-
 	}
 }
 
@@ -215,11 +296,13 @@ class ForceLawsDialog extends JDialog implements SimulatorObserver {
 	private String[] _headers = { "Key", "Value", "Description" };
 
 	// TODO en caso de ser necesario, añadir los atributos aquí…
+	int _status;
+
 	ForceLawsDialog(Frame parent, Controller ctrl) {
 		super(parent, true);
 		_ctrl = ctrl;
 		initGUI();
-		// TODO registrar this como observer;
+		ctrl.addObserver(this);
 	}
 
 	private void initGUI() {
@@ -233,7 +316,7 @@ class ForceLawsDialog extends JDialog implements SimulatorObserver {
 		_dataTableModel = new DefaultTableModel() {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				// TODO hacer editable solo la columna 1
+				return column == 1;
 			}
 		};
 		_dataTableModel.setColumnIdentifiers(_headers);
@@ -249,7 +332,7 @@ class ForceLawsDialog extends JDialog implements SimulatorObserver {
 		setVisible(false);
 	}
 
-	public void open() {
+	public int open() {
 		if (_groupsModel.getSize() == 0)
 			return _status;
 		// TODO Establecer la posición de la ventana de diálogo de tal manera que se
@@ -313,15 +396,48 @@ class ViewerWindow extends JFrame implements SimulatorObserver {
 		_ctrl = ctrl;
 		_parent = parent;
 		intiGUI();
-// TODO registrar this como observador
+		ctrl.addObserver(this);
 	}
 
 	private void intiGUI() {
 		JPanel mainPanel = new JPanel(new BorderLayout());
-		// TODO poner contentPane como mainPanel con scrollbars (JScrollPane)
-		// TODO crear el viewer y añadirlo a mainPanel (en el centro)
-		// TODO en el método windowClosing, eliminar ‘this’ de los observadores
-		// addWindowListener(new WindowListener() { … });
+		setContentPane(new JScrollPane(mainPanel));
+
+		_viewer = new Viewer();
+		mainPanel.add(_viewer, BorderLayout.CENTER);
+
+		addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				_ctrl.removeObserver((SimulatorObserver) e.getSource());
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+
+		});
 		pack();
 		if (_parent != null)
 			setLocation(_parent.getLocation().x + _parent.getWidth() / 2 - getWidth() / 2,

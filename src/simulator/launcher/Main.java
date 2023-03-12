@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -20,6 +22,7 @@ import simulator.factories.*;
 import simulator.model.Body;
 import simulator.model.ForceLaws;
 import simulator.model.PhysicsSimulator;
+import simulator.view.MainWindow;
 
 public class Main {
 
@@ -65,12 +68,13 @@ public class Main {
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine line = parser.parse(cmdLineOptions, args);
+			parseDeltaTimeOption(line);
+			parseForceLawsOption(line);
 			parseHelpOption(line, cmdLineOptions);
 			parseInFileOption(line);
+			parseModeOption(line);
 			parseOutFileOption(line);
-			parseDeltaTimeOption(line);
 			parseStepOption(line);
-			parseForceLawsOption(line);
 
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
@@ -93,25 +97,10 @@ public class Main {
 	private static Options buildOptions() {
 		Options cmdLineOptions = new Options();
 
-		// help
-		cmdLineOptions.addOption(Option.builder("h").longOpt("help").desc("Print this message.").build());
-
-		// input file
-		cmdLineOptions.addOption(Option.builder("i").longOpt("input").hasArg().desc("Bodies JSON input file.").build());
-
-		// output file
-		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg()
-				.desc("Output file, where output is written. Default value: the standard output.").build());
-
 		// delta-time
 		cmdLineOptions.addOption(Option.builder("dt").longOpt("delta-time").hasArg()
 				.desc("A double representing actual time, in seconds, per simulation step. Default value: "
 						+ _dtimeDefaultValue + ".")
-				.build());
-
-		// steps
-		cmdLineOptions.addOption(Option.builder("s").longOpt("steps").hasArg().desc(
-				"An integer representing the number of simulation steps. Default value: " + _stepsDefaultValue + ".")
 				.build());
 
 		// force laws
@@ -119,6 +108,26 @@ public class Main {
 				.desc("Force laws to be used in the simulator. Possible values: "
 						+ factoryPossibleValues(_forceLawsFactory) + ". Default value: '" + _forceLawsDefaultValue
 						+ "'.")
+				.build());
+
+		// help
+		cmdLineOptions.addOption(Option.builder("h").longOpt("help").desc("Print this message.").build());
+
+		// input file
+		cmdLineOptions.addOption(Option.builder("i").longOpt("input").hasArg().desc("Bodies JSON input file.").build());
+
+		// mode
+		cmdLineOptions.addOption(Option.builder("m").longOpt("mode").hasArg()
+				.desc("Execution Mode. Possible values: 'batch' (Batch mode), 'gui' (Graphical User Interface mode).")
+				.build());
+
+		// output file
+		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg()
+				.desc("Output file, where output is written. Default value: the standard output.").build());
+
+		// steps
+		cmdLineOptions.addOption(Option.builder("s").longOpt("steps").hasArg().desc(
+				"An integer representing the number of simulation steps. Default value: " + _stepsDefaultValue + ".")
 				.build());
 
 		return cmdLineOptions;
@@ -155,6 +164,11 @@ public class Main {
 		if (_inFile == null) {
 			throw new ParseException("In batch mode an input file of bodies is required");
 		}
+	}
+	
+	private static void parseModeOption(CommandLine line) throws ParseException {
+		String mode = line.getOptionValue("m");
+		
 	}
 
 	private static void parseOutFileOption(CommandLine line) throws ParseException {
@@ -238,6 +252,20 @@ public class Main {
 		ctrl.loadData(in);
 		ctrl.run(_steps, out);
 
+		if (_outFile != null)
+			out.close();
+	}
+
+	private static void startGUIMode() throws Exception {
+		PhysicsSimulator ps = new PhysicsSimulator(_forceLawsFactory.createInstance(_forceLawsInfo), _dtime);
+		InputStream in = new FileInputStream(_inFile);
+		OutputStream out = _outFile == null ? System.out : new FileOutputStream(_outFile);
+		Controller ctrl = new Controller(ps, _forceLawsFactory, _bodyFactory);
+
+		ctrl.loadData(in);
+
+		SwingUtilities.invokeAndWait(() -> new MainWindow(ctrl));
+		
 		if (_outFile != null)
 			out.close();
 	}

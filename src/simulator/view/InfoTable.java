@@ -1,8 +1,12 @@
 package simulator.view;
 
+import java.awt.BorderLayout;
 import java.util.*;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.*;
 
 import simulator.control.Controller;
@@ -19,10 +23,10 @@ public class InfoTable extends JPanel {
 	}
 
 	private void initGUI() {
-		// TODO cambiar el layout del panel a BorderLayout()
-		// TODO añadir un borde con título al JPanel, con el texto _title
-		// TODO añadir un JTable (con barra de desplazamiento vertical) que use
-		// _tableModel
+		setLayout(new BorderLayout());
+		setBorder(BorderFactory.createTitledBorder(_title));
+		
+		add(new JScrollPane(new JTable(_tableModel)));
 	}
 }
 
@@ -32,20 +36,18 @@ class GroupsTableModel extends AbstractTableModel implements SimulatorObserver {
 
 	GroupsTableModel(Controller ctrl) {
 		_groups = new ArrayList<>();
-		// TODO registrar this como observador;
+		ctrl.addObserver(this);
 	}
 
 	// TODO el resto de métodos van aquí …
 	@Override
 	public int getRowCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return _groups.size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return _header.length;
 	}
 
 	@Override
@@ -56,8 +58,6 @@ class GroupsTableModel extends AbstractTableModel implements SimulatorObserver {
 
 	@Override
 	public void onAdvance(Map<String, BodiesGroup> groups, double time) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -80,8 +80,6 @@ class GroupsTableModel extends AbstractTableModel implements SimulatorObserver {
 
 	@Override
 	public void onBodyAdded(Map<String, BodiesGroup> groups, Body b) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -103,20 +101,18 @@ class BodiesTableModel extends AbstractTableModel implements SimulatorObserver {
 
 	BodiesTableModel(Controller ctrl) {
 		_bodies = new ArrayList<>();
-		// TODO registrar this como observer
+		ctrl.addObserver(this);
 	}
 
 	// TODO el resto de métodos van aquí…
 	@Override
 	public int getRowCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return _bodies.size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return _header.length;
 	}
 
 	@Override
