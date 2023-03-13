@@ -71,7 +71,7 @@ public class Main {
 			parseDeltaTimeOption(line);
 			parseForceLawsOption(line);
 			parseHelpOption(line, cmdLineOptions);
-			parseInFileOption(line);
+			//parseInFileOption(line);
 			parseModeOption(line);
 			parseOutFileOption(line);
 			parseStepOption(line);
@@ -258,11 +258,11 @@ public class Main {
 
 	private static void startGUIMode() throws Exception {
 		PhysicsSimulator ps = new PhysicsSimulator(_forceLawsFactory.createInstance(_forceLawsInfo), _dtime);
-		InputStream in = new FileInputStream(_inFile);
+		//InputStream in = new FileInputStream(_inFile);
 		OutputStream out = _outFile == null ? System.out : new FileOutputStream(_outFile);
 		Controller ctrl = new Controller(ps, _forceLawsFactory, _bodyFactory);
 
-		ctrl.loadData(in);
+		//ctrl.loadData(in);
 
 		SwingUtilities.invokeAndWait(() -> new MainWindow(ctrl));
 		
@@ -272,7 +272,7 @@ public class Main {
 
 	private static void start(String[] args) throws Exception {
 		parseArgs(args);
-		startBatchMode();
+		startGUIMode();
 	}
 
 	public static void main(String[] args) {

@@ -39,7 +39,7 @@ public class BodiesGroup implements Iterable<Body> {
 		this.laws = fl;
 	}
 
-	void addBody(Body b) {
+	public void addBody(Body b) {
 		if (b == null)
 			throw new IllegalArgumentException("El parámetro body es null");
 
