@@ -18,6 +18,8 @@ class StatusBar extends JPanel implements SimulatorObserver {
 	// TODO Añadir los atributos necesarios, si hace falta …
 	double _time = 0;
 	int _groups = 0;
+	JLabel _timeLabel;
+	JLabel _groupsLabel;
 
 	StatusBar(Controller ctrl) {
 		initGUI();
@@ -28,12 +30,14 @@ class StatusBar extends JPanel implements SimulatorObserver {
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.setBorder(BorderFactory.createBevelBorder(1));
 
-		this.add(new JLabel("Time: " + _time));
+		_timeLabel = new JLabel("Time: " + _time);
+		this.add(_timeLabel);
 		JSeparator s = new JSeparator(JSeparator.VERTICAL);
 		s.setPreferredSize(new Dimension(10, 20));
 		this.add(s);
 
-		this.add(new JLabel("Groups: " + _groups));
+		_groupsLabel=new JLabel("Groups: " + _groups);
+		this.add(_groupsLabel);
 		JSeparator s2 = new JSeparator(JSeparator.VERTICAL);
 		s2.setPreferredSize(new Dimension(10, 20));
 		this.add(s2);
@@ -43,6 +47,7 @@ class StatusBar extends JPanel implements SimulatorObserver {
 	@Override
 	public void onAdvance(Map<String, BodiesGroup> groups, double time) {
 		_time = time;
+		_timeLabel.setText("Time: " + _time);
 	}
 
 	@Override
@@ -60,6 +65,7 @@ class StatusBar extends JPanel implements SimulatorObserver {
 	@Override
 	public void onGroupAdded(Map<String, BodiesGroup> groups, BodiesGroup g) {
 		_groups = groups.size();
+		_groupsLabel.setText("Groups: " + _groups);
 	}
 
 	@Override

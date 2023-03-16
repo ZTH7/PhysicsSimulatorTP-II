@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
 import simulator.control.Controller;
@@ -36,9 +37,8 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 	private JButton _stopButton;
 	private JSpinner _stepsEnter;
 	private JTextField _deltaTimeEnter;
-	private int _steps = 0;
-	private double _deltaTime = 0.0;
-
+	private ForceLawsDialog _forceLawsDialog;
+	
 	// TODO añade más atributos aquí …
 	ControlPanel(Controller ctrl) {
 		_ctrl = ctrl;
@@ -74,7 +74,12 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 		_forceLawsButton = new JButton();
 		_forceLawsButton.setToolTipText("Select force laws for groups");
 		_forceLawsButton.setIcon(new ImageIcon("resources/icons/physics.png"));
-		_forceLawsButton.addActionListener((e) -> Utils.quit(this));
+		_forceLawsButton.addActionListener((e) -> {
+			if (_forceLawsDialog == null)
+				_forceLawsDialog = new ForceLawsDialog((JFrame) Utils.getWindow(ControlPanel.this), _ctrl);
+
+			_forceLawsDialog.open();
+		});
 		_toolaBar.add(_forceLawsButton);
 
 		// Viewer Button
@@ -82,7 +87,7 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 		_viewerButton.setToolTipText("Open viewer window");
 		_viewerButton.setIcon(new ImageIcon("resources/icons/viewer.png"));
 		_viewerButton.addActionListener((e) -> {
-			new ViewerWindow((JFrame) Utils.getWindow(this), _ctrl);
+			new ViewerWindow((JFrame) Utils.getWindow(ControlPanel.this), _ctrl);
 		});
 		_toolaBar.add(_viewerButton);
 		_toolaBar.addSeparator();
@@ -100,10 +105,8 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 			_viewerButton.setEnabled(false);
 			_runButton.setEnabled(false);
 
-			_deltaTime = Double.parseDouble(_deltaTimeEnter.getText());
-			_steps = (int)_stepsEnter.getValue();
-			
-			SwingUtilities.invokeLater(() -> run_sim(_steps));
+			_ctrl.setDeltaTime(Double.parseDouble(_deltaTimeEnter.getText()));
+			SwingUtilities.invokeLater(() -> run_sim((int) _stepsEnter.getValue()));
 		});
 		_toolaBar.add(_runButton);
 
@@ -123,17 +126,18 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 		_toolaBar.add(_stopButton);
 
 		_toolaBar.add(new JLabel("Steps: "));
-		_stepsEnter = new JSpinner();
-		_stepsEnter.setPreferredSize(new Dimension(60, 40));
-		_stepsEnter.setMaximumSize(new Dimension(60, 40));
-		_stepsEnter.setToolTipText("Simulation steps to run: 1-10000");
+		_stepsEnter = new JSpinner(new SpinnerNumberModel(10, 1, 10000, 1));
+		_stepsEnter.setToolTipText("Simulation tick to run: 1-10000");
+		_stepsEnter.setMaximumSize(new Dimension(80, 40));
+		_stepsEnter.setMinimumSize(new Dimension(80, 40));
+		_stepsEnter.setPreferredSize(new Dimension(80, 40));
 		_toolaBar.add(_stepsEnter);
 
 		_toolaBar.add(new JLabel("Delta-Time: "));
 		_deltaTimeEnter = new JTextField();
-		_deltaTimeEnter.setPreferredSize(new Dimension(60, 40));
-		_deltaTimeEnter.setMaximumSize(new Dimension(60, 40));
-		_deltaTimeEnter.setText("0.0");
+		_deltaTimeEnter.setPreferredSize(new Dimension(80, 40));
+		_deltaTimeEnter.setMaximumSize(new Dimension(80, 40));
+		_deltaTimeEnter.setText("10.0");
 		_deltaTimeEnter.setToolTipText("Real time (seconds) corresponding to a step");
 		_toolaBar.add(_deltaTimeEnter);
 
@@ -185,8 +189,6 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 
 	@Override
 	public void onAdvance(Map<String, BodiesGroup> groups, double time) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -211,12 +213,9 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 
 	@Override
 	public void onDeltaTimeChanged(double dt) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onForceLawsChanged(BodiesGroup g) {
 	}
 }
-

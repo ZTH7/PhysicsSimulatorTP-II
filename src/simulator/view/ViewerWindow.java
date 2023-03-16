@@ -43,7 +43,6 @@ class ViewerWindow extends JFrame implements SimulatorObserver {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				_ctrl.removeObserver(ViewerWindow.this);
-				Utils.quit(ViewerWindow.this);
 			}
 
 			@Override
@@ -91,7 +90,6 @@ class ViewerWindow extends JFrame implements SimulatorObserver {
 			_viewer.addGroup(bg);
 			bg.forEach(body -> _viewer.addBody(body));
 		});
-
 	}
 
 	@Override
