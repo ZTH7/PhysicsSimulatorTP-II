@@ -3,17 +3,13 @@ package simulator.view;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.*;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.table.*;
 import simulator.control.Controller;
-import simulator.model.*;
-import org.json.JSONObject;
 
 public class MainWindow extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+
 	private Controller _ctrl;
 
 	public MainWindow(Controller ctrl) {

@@ -12,6 +12,9 @@ import simulator.model.Body;
 import simulator.model.SimulatorObserver;
 
 class BodiesTableModel extends AbstractTableModel implements SimulatorObserver {
+
+	private static final long serialVersionUID = 1L;
+
 	String[] _header = { "Id", "gId", "Mass", "Velocity", "Position", "Force" };
 	List<Body> _bodies;
 
@@ -20,7 +23,7 @@ class BodiesTableModel extends AbstractTableModel implements SimulatorObserver {
 		ctrl.addObserver(this);
 	}
 
-	// TODO el resto de métodos van aquí…
+	// el resto de métodos van aquí…
 	@Override
 	public int getRowCount() {
 		return _bodies.size();

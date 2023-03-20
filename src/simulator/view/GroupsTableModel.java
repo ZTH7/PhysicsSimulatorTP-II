@@ -12,6 +12,9 @@ import simulator.model.Body;
 import simulator.model.SimulatorObserver;
 
 class GroupsTableModel extends AbstractTableModel implements SimulatorObserver {
+
+	private static final long serialVersionUID = 1L;
+
 	String[] _header = { "Id", "Force Laws", "Bodies" };
 	List<BodiesGroup> _groups;
 
@@ -20,7 +23,7 @@ class GroupsTableModel extends AbstractTableModel implements SimulatorObserver {
 		ctrl.addObserver(this);
 	}
 
-	// TODO el resto de métodos van aquí …
+	// el resto de métodos van aquí …
 	@Override
 	public int getRowCount() {
 		return _groups.size();
@@ -89,6 +92,6 @@ class GroupsTableModel extends AbstractTableModel implements SimulatorObserver {
 	@Override
 	public void onForceLawsChanged(BodiesGroup g) {
 		// TODO Auto-generated method stub
-
+		fireTableStructureChanged();
 	}
 }

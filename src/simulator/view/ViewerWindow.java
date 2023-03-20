@@ -15,6 +15,9 @@ import simulator.model.Body;
 import simulator.model.SimulatorObserver;
 
 class ViewerWindow extends JFrame implements SimulatorObserver {
+
+	private static final long serialVersionUID = 1L;
+
 	private Controller _ctrl;
 	private SimulationViewer _viewer;
 	private JFrame _parent;
@@ -73,7 +76,7 @@ class ViewerWindow extends JFrame implements SimulatorObserver {
 		setVisible(true);
 	}
 
-	// TODO otros métodos van aquí….
+	// otros métodos van aquí….
 	@Override
 	public void onAdvance(Map<String, BodiesGroup> groups, double time) {
 		_viewer.update();

@@ -2,6 +2,7 @@ package simulator.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -85,13 +86,37 @@ class Viewer extends SimulationViewer {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyChar()) {
+				case '-':
+					_scale = _scale * 1.1;
+					repaint();
+					break;
+				case '+':
+					_scale = Math.max(1000.0, _scale / 1.1);
+					repaint();
+					break;
+				case '=':
+					autoScale();
+					repaint();
+					break;
+				default:
+				}
+
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_J:
-					_originX -= 10;
+					_originX += 10;
 					repaint();
 					break;
 				case KeyEvent.VK_L:
-					_originX += 10;
+					_originX -= 10;
 					repaint();
 					break;
 				case KeyEvent.VK_I:
@@ -116,34 +141,10 @@ class Viewer extends SimulationViewer {
 					repaint();
 					break;
 				case KeyEvent.VK_G:
-					_selectedGroupIdx = (_selectedGroupIdx + 1) % (_groups.size() + 1) - 1;
+					_selectedGroupIdx = (_selectedGroupIdx + 2) % (_groups.size() + 1) - 1;
 					_selectedGroup = _selectedGroupIdx == -1 ? null : _groups.get(_selectedGroupIdx).getId();
 					repaint();
 					break;
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				switch (e.getKeyChar()) {
-				case '-':
-					_scale = _scale * 1.1;
-					repaint();
-					break;
-				case '+':
-					_scale = Math.max(1000.0, _scale / 1.1);
-					repaint();
-					break;
-				case '=':
-					autoScale();
-					repaint();
-					break;
-
-				default:
 				}
 			}
 		});
@@ -188,9 +189,10 @@ class Viewer extends SimulationViewer {
 		_centerX = getWidth() / 2 - _originX;
 		_centerY = getHeight() / 2 - _originY;
 
+		// draw red cross at (_centerX,_centerY)
 		gr.setColor(Color.RED);
-		gr.drawLine(_centerX - 10, _centerY, _centerX + 10, _centerY);
-		gr.drawLine(_centerX, _centerY - 10, _centerX, _centerY + 10);
+		gr.drawLine(_centerX - 5, _centerY, _centerX + 5, _centerY);
+		gr.drawLine(_centerX, _centerY - 5, _centerX, _centerY + 5);
 
 		// draw bodies
 		drawBodies(gr);
@@ -202,25 +204,30 @@ class Viewer extends SimulationViewer {
 	}
 
 	private void showHelp(Graphics2D g) {
-		g.drawString("h: toggle help, v: toggle vectors, +: zoom-in, -: zoom-out, =: fit l: move\n"
-				+ "right, j: move left, i: move up, m: move down: k: reset g: show next group\n"
-				+ "Scaling ratio: ... Selected Group: ...", 0, 0);
+		g.setColor(Color.RED);
+		g.setFont(new Font(null, 1, 15));
+		g.drawString("h: toggle help, v: toggle vectors, +: zoom-in, -: zoom-out, =: fit", 5, 20);
+		g.drawString("l: move right, j: move left, i: move up, m: move down: k: reset", 5, 40);
+		g.drawString("g: show next group", 5, 60);
+		g.drawString("Scaling ratio: " + _scale, 5, 80);
+
+		g.setColor(Color.BLUE);
+		g.drawString("Selected Group: " + (_selectedGroup == null ? "all" : _selectedGroup), 5, 100);
 	}
 
 	private void drawBodies(Graphics2D g) {
 		for (Body b : _bodies) {
 			if (isVisible(b)) {
-				Vector2D pos = b.getPosition();
+				Vector2D pos = new Vector2D(_centerX, _centerY).plus(b.getPosition().scale(1.0 / _scale));
 				g.setColor(_gColor.get(b.getgId()));
-				//g.draw(new Ellipse2D.Double(pos.getX(), pos.getY(), 2, 2));
-				g.drawOval((int) pos.getX(), (int) pos.getY(), 1, 1);
+				g.fill(new Ellipse2D.Double(pos.getX() - 5, pos.getY() - 5, 10, 10));
 
 				if (_showVectors) {
-					Vector2D force = pos.plus(b.getForce()).scale(_scale);
-					Vector2D velo = pos.plus(b.getVelocity()).scale(_scale);
-					drawLineWithArrow(g, (int) pos.getX(), (int) pos.getY(), (int) force.getX(), (int) force.getY(), 1,
-							1, Color.RED, Color.RED);
-					drawLineWithArrow(g, (int) pos.getX(), (int) pos.getY(), (int) velo.getX(), (int) velo.getY(), 1, 1,
+					Vector2D force = pos.plus(b.getForce().direction().scale(30));
+					Vector2D velo = pos.plus(b.getVelocity().direction().scale(30));
+					drawLineWithArrow(g, (int) pos.getX(), (int) pos.getY(), (int) force.getX(), (int) force.getY(), 5,
+							5, Color.RED, Color.RED);
+					drawLineWithArrow(g, (int) pos.getX(), (int) pos.getY(), (int) velo.getX(), (int) velo.getY(), 5, 5,
 							Color.GREEN, Color.GREEN);
 				}
 			}
@@ -228,7 +235,7 @@ class Viewer extends SimulationViewer {
 	}
 
 	private boolean isVisible(Body b) {
-		return _selectedGroup == null || _selectedGroup == b.getgId();
+		return _selectedGroup == null || _selectedGroup.equals(b.getgId());
 	}
 
 	// calculates a value for scale such that all visible bodies fit in the window

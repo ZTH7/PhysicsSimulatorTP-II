@@ -15,7 +15,10 @@ import simulator.model.Body;
 import simulator.model.SimulatorObserver;
 
 class StatusBar extends JPanel implements SimulatorObserver {
-	// TODO Añadir los atributos necesarios, si hace falta …
+
+	private static final long serialVersionUID = 1L;
+
+	// Añadir los atributos necesarios, si hace falta …
 	double _time = 0;
 	int _groups = 0;
 	JLabel _timeLabel;
@@ -36,14 +39,14 @@ class StatusBar extends JPanel implements SimulatorObserver {
 		s.setPreferredSize(new Dimension(10, 20));
 		this.add(s);
 
-		_groupsLabel=new JLabel("Groups: " + _groups);
+		_groupsLabel = new JLabel("Groups: " + _groups);
 		this.add(_groupsLabel);
 		JSeparator s2 = new JSeparator(JSeparator.VERTICAL);
 		s2.setPreferredSize(new Dimension(10, 20));
 		this.add(s2);
 	}
 
-	// TODO el resto de métodos van aquí…
+	// el resto de métodos van aquí…
 	@Override
 	public void onAdvance(Map<String, BodiesGroup> groups, double time) {
 		_time = time;
@@ -52,14 +55,14 @@ class StatusBar extends JPanel implements SimulatorObserver {
 
 	@Override
 	public void onReset(Map<String, BodiesGroup> groups, double time, double dt) {
-		// TODO Auto-generated method stub
-
+		_time = 0;
+		_groups = 0;
 	}
 
 	@Override
 	public void onRegister(Map<String, BodiesGroup> groups, double time, double dt) {
-		// TODO Auto-generated method stub
-
+		_time = 0;
+		_groups = 0;
 	}
 
 	@Override

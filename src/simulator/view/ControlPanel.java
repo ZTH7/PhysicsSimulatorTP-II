@@ -25,6 +25,9 @@ import simulator.model.Body;
 import simulator.model.SimulatorObserver;
 
 class ControlPanel extends JPanel implements SimulatorObserver {
+
+	private static final long serialVersionUID = 1L;
+
 	private Controller _ctrl;
 	private JToolBar _toolaBar;
 	private JFileChooser _fc;
@@ -38,8 +41,8 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 	private JSpinner _stepsEnter;
 	private JTextField _deltaTimeEnter;
 	private ForceLawsDialog _forceLawsDialog;
-	
-	// TODO añade más atributos aquí …
+
+	// añade más atributos aquí …
 	ControlPanel(Controller ctrl) {
 		_ctrl = ctrl;
 		initGUI();
@@ -156,7 +159,7 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 		_fc.setMultiSelectionEnabled(false);
 	}
 
-	// TODO el resto de métodos van aquí…
+	// el resto de métodos van aquí…
 	private void run_sim(int n) {
 		if (n > 0 && !_stopped) {
 			try {
@@ -175,8 +178,6 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 			}
 			SwingUtilities.invokeLater(() -> run_sim(n - 1));
 		} else {
-			Utils.showErrorMsg("Finished.");
-
 			_quitButton.setEnabled(true);
 			_fileButton.setEnabled(true);
 			_forceLawsButton.setEnabled(true);
