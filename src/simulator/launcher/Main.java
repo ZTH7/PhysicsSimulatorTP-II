@@ -38,6 +38,7 @@ public class Main {
 	private static Double _dtime = null;
 	private static String _inFile = null;
 	private static String _outFile = null;
+	private static String _mode = null;
 	private static JSONObject _forceLawsInfo = null;
 
 	// factories
@@ -71,8 +72,8 @@ public class Main {
 			parseDeltaTimeOption(line);
 			parseForceLawsOption(line);
 			parseHelpOption(line, cmdLineOptions);
-			//parseInFileOption(line);
 			parseModeOption(line);
+			parseInFileOption(line);
 			parseOutFileOption(line);
 			parseStepOption(line);
 
@@ -159,16 +160,19 @@ public class Main {
 		}
 	}
 
+	private static void parseModeOption(CommandLine line) throws ParseException {
+		_mode = line.getOptionValue("m");
+		if (_mode == null)
+			_mode = "gui";
+		else if (!_mode.equalsIgnoreCase("gui") && !_mode.equalsIgnoreCase("batch"))
+			throw new ParseException("Illegal mode argument");
+	}
+
 	private static void parseInFileOption(CommandLine line) throws ParseException {
 		_inFile = line.getOptionValue("i");
-		if (_inFile == null) {
+		if (_mode.equalsIgnoreCase("batch") && _inFile == null) {
 			throw new ParseException("In batch mode an input file of bodies is required");
 		}
-	}
-	
-	private static void parseModeOption(CommandLine line) throws ParseException {
-		String mode = line.getOptionValue("m");
-		
 	}
 
 	private static void parseOutFileOption(CommandLine line) throws ParseException {
@@ -258,21 +262,20 @@ public class Main {
 
 	private static void startGUIMode() throws Exception {
 		PhysicsSimulator ps = new PhysicsSimulator(_forceLawsFactory.createInstance(_forceLawsInfo), _dtime);
-		//InputStream in = new FileInputStream(_inFile);
-		OutputStream out = _outFile == null ? System.out : new FileOutputStream(_outFile);
 		Controller ctrl = new Controller(ps, _forceLawsFactory, _bodyFactory);
 
-		//ctrl.loadData(in);
+		if (_inFile != null)
+			ctrl.loadData(new FileInputStream(_inFile));
 
 		SwingUtilities.invokeAndWait(() -> new MainWindow(ctrl));
-		
-		if (_outFile != null)
-			out.close();
 	}
 
 	private static void start(String[] args) throws Exception {
 		parseArgs(args);
-		startGUIMode();
+		if (_mode.equalsIgnoreCase("gui"))
+			startGUIMode();
+		else
+			startBatchMode();
 	}
 
 	public static void main(String[] args) {

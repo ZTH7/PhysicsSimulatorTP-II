@@ -81,7 +81,6 @@ class GroupsTableModel extends AbstractTableModel implements SimulatorObserver {
 
 	@Override
 	public void onBodyAdded(Map<String, BodiesGroup> groups, Body b) {
-		// TODO
 		fireTableStructureChanged();
 	}
 
@@ -91,7 +90,6 @@ class GroupsTableModel extends AbstractTableModel implements SimulatorObserver {
 
 	@Override
 	public void onForceLawsChanged(BodiesGroup g) {
-		// TODO Auto-generated method stub
 		fireTableStructureChanged();
 	}
 }

@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -220,7 +219,7 @@ class Viewer extends SimulationViewer {
 			if (isVisible(b)) {
 				Vector2D pos = new Vector2D(_centerX, _centerY).plus(b.getPosition().scale(1.0 / _scale));
 				g.setColor(_gColor.get(b.getgId()));
-				g.fill(new Ellipse2D.Double(pos.getX() - 5, pos.getY() - 5, 10, 10));
+				g.fillOval((int) pos.getX() - 5, (int) pos.getY() - 5, 10, 10);
 
 				if (_showVectors) {
 					Vector2D force = pos.plus(b.getForce().direction().scale(30));

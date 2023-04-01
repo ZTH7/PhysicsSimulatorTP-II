@@ -15,12 +15,5 @@ public class NoForceBuilder extends Builder<ForceLaws> {
 	protected NoForce createInstance(JSONObject data) {
 		return new NoForce();
 	}
-	
-	@Override
-	public JSONObject getInfo() {
-		JSONObject jo = super.getInfo();
-		jo.put("data", new JSONObject());
-		return jo;
-	}
 
 }

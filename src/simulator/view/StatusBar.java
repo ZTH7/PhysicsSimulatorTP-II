@@ -55,14 +55,18 @@ class StatusBar extends JPanel implements SimulatorObserver {
 
 	@Override
 	public void onReset(Map<String, BodiesGroup> groups, double time, double dt) {
-		_time = 0;
-		_groups = 0;
+		_time = time;
+		_groups = groups.size();
+		_timeLabel.setText("Time: " + _time);
+		_groupsLabel.setText("Groups: " + _groups);
 	}
 
 	@Override
 	public void onRegister(Map<String, BodiesGroup> groups, double time, double dt) {
-		_time = 0;
-		_groups = 0;
+		_time = time;
+		_groups = groups.size();
+		_timeLabel.setText("Time: " + _time);
+		_groupsLabel.setText("Groups: " + _groups);
 	}
 
 	@Override

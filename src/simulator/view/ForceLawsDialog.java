@@ -22,6 +22,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import simulator.control.Controller;
 import simulator.model.BodiesGroup;
@@ -29,9 +31,9 @@ import simulator.model.Body;
 import simulator.model.SimulatorObserver;
 
 class ForceLawsDialog extends JDialog implements SimulatorObserver {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private DefaultComboBoxModel<String> _lawsModel;
 	private DefaultComboBoxModel<String> _groupsModel;
 	private DefaultTableModel _dataTableModel;
@@ -74,9 +76,9 @@ class ForceLawsDialog extends JDialog implements SimulatorObserver {
 		mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		_dataTableModel = new DefaultTableModel() {
-			
+
 			private static final long serialVersionUID = 1L;
-			
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return column == 1;
@@ -149,8 +151,14 @@ class ForceLawsDialog extends JDialog implements SimulatorObserver {
 				try {
 					JSONObject aux = new JSONObject();
 					for (int i = 0; i < _dataTableModel.getRowCount(); i++) {
-						// TODO
-						aux.put((String) _dataTableModel.getValueAt(i, 0), (String) _dataTableModel.getValueAt(i, 1));
+						String str = (String) _dataTableModel.getValueAt(i, 1);
+						try {
+							Double n = Double.parseDouble(str);
+							aux.put((String) _dataTableModel.getValueAt(i, 0), n);
+						} catch (NumberFormatException ex) {
+							JSONArray ja = new JSONArray(str);
+							aux.put((String) _dataTableModel.getValueAt(i, 0), ja);
+						}
 					}
 
 					JSONObject jo = new JSONObject();

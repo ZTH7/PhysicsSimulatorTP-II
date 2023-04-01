@@ -165,15 +165,15 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 			try {
 				_ctrl.run(1);
 			} catch (Exception e) {
-				Utils.showErrorMsg(e.getMessage());
-
 				_quitButton.setEnabled(true);
 				_fileButton.setEnabled(true);
 				_forceLawsButton.setEnabled(true);
 				_viewerButton.setEnabled(true);
 				_runButton.setEnabled(true);
-
 				_stopped = true;
+
+				Utils.showErrorMsg(e.getMessage());
+
 				return;
 			}
 			SwingUtilities.invokeLater(() -> run_sim(n - 1));
@@ -194,14 +194,11 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 
 	@Override
 	public void onReset(Map<String, BodiesGroup> groups, double time, double dt) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onRegister(Map<String, BodiesGroup> groups, double time, double dt) {
-		// TODO Auto-generated method stub
-
+		_deltaTimeEnter.setText(Double.toString(dt));
 	}
 
 	@Override
@@ -214,6 +211,7 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 
 	@Override
 	public void onDeltaTimeChanged(double dt) {
+		_deltaTimeEnter.setText(Double.toString(dt));
 	}
 
 	@Override
