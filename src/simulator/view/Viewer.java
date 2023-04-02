@@ -217,9 +217,14 @@ class Viewer extends SimulationViewer {
 	private void drawBodies(Graphics2D g) {
 		for (Body b : _bodies) {
 			if (isVisible(b)) {
-				Vector2D pos = new Vector2D(_centerX, _centerY).plus(b.getPosition().scale(1.0 / _scale));
+				Vector2D bodyDir = b.getPosition().scale(1.0 / _scale);
+				Vector2D pos = new Vector2D(_centerX + bodyDir.getX(), _centerY - bodyDir.getY());
 				g.setColor(_gColor.get(b.getgId()));
 				g.fillOval((int) pos.getX() - 5, (int) pos.getY() - 5, 10, 10);
+				g.setColor(Color.BLACK);
+				g.drawString(b.getId(),
+						(int) pos.getX() - g.getFontMetrics().stringWidth(b.getId()) / 2, // pos x
+						(int) pos.getY() - 8);
 
 				if (_showVectors) {
 					Vector2D force = pos.plus(b.getForce().direction().scale(30));
