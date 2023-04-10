@@ -79,7 +79,7 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 		_forceLawsButton.setIcon(new ImageIcon("resources/icons/physics.png"));
 		_forceLawsButton.addActionListener((e) -> {
 			if (_forceLawsDialog == null)
-				_forceLawsDialog = new ForceLawsDialog((JFrame) Utils.getWindow(ControlPanel.this), _ctrl);
+				_forceLawsDialog = new ForceLawsDialog(Utils.getWindow(ControlPanel.this), _ctrl);
 
 			_forceLawsDialog.open();
 		});
@@ -101,12 +101,7 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 		_runButton.setIcon(new ImageIcon("resources/icons/run.png"));
 		_runButton.addActionListener((e) -> {
 			_stopped = false;
-
-			_quitButton.setEnabled(false);
-			_fileButton.setEnabled(false);
-			_forceLawsButton.setEnabled(false);
-			_viewerButton.setEnabled(false);
-			_runButton.setEnabled(false);
+			enableToolbar(false);
 
 			_ctrl.setDeltaTime(Double.parseDouble(_deltaTimeEnter.getText()));
 			SwingUtilities.invokeLater(() -> run_sim((int) _stepsEnter.getValue()));
@@ -119,12 +114,7 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 		_stopButton.setIcon(new ImageIcon("resources/icons/stop.png"));
 		_stopButton.addActionListener((e) -> {
 			_stopped = true;
-
-			_quitButton.setEnabled(true);
-			_fileButton.setEnabled(true);
-			_forceLawsButton.setEnabled(true);
-			_viewerButton.setEnabled(true);
-			_runButton.setEnabled(true);
+			enableToolbar(true);
 		});
 		_toolaBar.add(_stopButton);
 
@@ -165,27 +155,26 @@ class ControlPanel extends JPanel implements SimulatorObserver {
 			try {
 				_ctrl.run(1);
 			} catch (Exception e) {
-				_quitButton.setEnabled(true);
-				_fileButton.setEnabled(true);
-				_forceLawsButton.setEnabled(true);
-				_viewerButton.setEnabled(true);
-				_runButton.setEnabled(true);
+				enableToolbar(true);
 				_stopped = true;
-
+				
 				Utils.showErrorMsg(e.getMessage());
 
 				return;
 			}
 			SwingUtilities.invokeLater(() -> run_sim(n - 1));
 		} else {
-			_quitButton.setEnabled(true);
-			_fileButton.setEnabled(true);
-			_forceLawsButton.setEnabled(true);
-			_viewerButton.setEnabled(true);
-			_runButton.setEnabled(true);
-
+			enableToolbar(true);
 			_stopped = true;
 		}
+	}
+	
+	void enableToolbar(boolean b) {
+		_quitButton.setEnabled(b);
+		_fileButton.setEnabled(b);
+		_forceLawsButton.setEnabled(b);
+		_viewerButton.setEnabled(b);
+		_runButton.setEnabled(b);
 	}
 
 	@Override

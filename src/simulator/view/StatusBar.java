@@ -19,8 +19,6 @@ class StatusBar extends JPanel implements SimulatorObserver {
 	private static final long serialVersionUID = 1L;
 
 	// Añadir los atributos necesarios, si hace falta …
-	double _time = 0;
-	int _groups = 0;
 	JLabel _timeLabel;
 	JLabel _groupsLabel;
 
@@ -33,13 +31,13 @@ class StatusBar extends JPanel implements SimulatorObserver {
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.setBorder(BorderFactory.createBevelBorder(1));
 
-		_timeLabel = new JLabel("Time: " + _time);
+		_timeLabel = new JLabel("Time: 0");
 		this.add(_timeLabel);
 		JSeparator s = new JSeparator(JSeparator.VERTICAL);
 		s.setPreferredSize(new Dimension(10, 20));
 		this.add(s);
 
-		_groupsLabel = new JLabel("Groups: " + _groups);
+		_groupsLabel = new JLabel("Groups: 0");
 		this.add(_groupsLabel);
 		JSeparator s2 = new JSeparator(JSeparator.VERTICAL);
 		s2.setPreferredSize(new Dimension(10, 20));
@@ -49,30 +47,24 @@ class StatusBar extends JPanel implements SimulatorObserver {
 	// el resto de métodos van aquí…
 	@Override
 	public void onAdvance(Map<String, BodiesGroup> groups, double time) {
-		_time = time;
-		_timeLabel.setText("Time: " + _time);
+		_timeLabel.setText("Time: " + time);
 	}
 
 	@Override
 	public void onReset(Map<String, BodiesGroup> groups, double time, double dt) {
-		_time = time;
-		_groups = groups.size();
-		_timeLabel.setText("Time: " + _time);
-		_groupsLabel.setText("Groups: " + _groups);
+		_timeLabel.setText("Time: " + time);
+		_groupsLabel.setText("Groups: " + groups.size());
 	}
 
 	@Override
 	public void onRegister(Map<String, BodiesGroup> groups, double time, double dt) {
-		_time = time;
-		_groups = groups.size();
-		_timeLabel.setText("Time: " + _time);
-		_groupsLabel.setText("Groups: " + _groups);
+		_timeLabel.setText("Time: " + time);
+		_groupsLabel.setText("Groups: " + groups.size());
 	}
 
 	@Override
 	public void onGroupAdded(Map<String, BodiesGroup> groups, BodiesGroup g) {
-		_groups = groups.size();
-		_groupsLabel.setText("Groups: " + _groups);
+		_groupsLabel.setText("Groups: " + groups.size());
 	}
 
 	@Override

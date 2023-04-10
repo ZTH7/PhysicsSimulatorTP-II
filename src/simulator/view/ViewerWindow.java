@@ -91,7 +91,6 @@ class ViewerWindow extends JFrame implements SimulatorObserver {
 	public void onRegister(Map<String, BodiesGroup> groups, double time, double dt) {
 		groups.values().forEach(bg -> {
 			_viewer.addGroup(bg);
-			bg.forEach(body -> _viewer.addBody(body));
 		});
 	}
 

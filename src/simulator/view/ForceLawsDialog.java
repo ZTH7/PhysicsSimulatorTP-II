@@ -152,6 +152,9 @@ class ForceLawsDialog extends JDialog implements SimulatorObserver {
 					JSONObject aux = new JSONObject();
 					for (int i = 0; i < _dataTableModel.getRowCount(); i++) {
 						String str = (String) _dataTableModel.getValueAt(i, 1);
+						if (str == null)
+							continue;
+
 						try {
 							Double n = Double.parseDouble(str);
 							aux.put((String) _dataTableModel.getValueAt(i, 0), n);
@@ -159,6 +162,7 @@ class ForceLawsDialog extends JDialog implements SimulatorObserver {
 							JSONArray ja = new JSONArray(str);
 							aux.put((String) _dataTableModel.getValueAt(i, 0), ja);
 						}
+
 					}
 
 					JSONObject jo = new JSONObject();

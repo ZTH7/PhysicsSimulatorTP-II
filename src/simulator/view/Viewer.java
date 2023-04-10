@@ -222,17 +222,18 @@ class Viewer extends SimulationViewer {
 				g.setColor(_gColor.get(b.getgId()));
 				g.fillOval((int) pos.getX() - 5, (int) pos.getY() - 5, 10, 10);
 				g.setColor(Color.BLACK);
-				g.drawString(b.getId(),
-						(int) pos.getX() - g.getFontMetrics().stringWidth(b.getId()) / 2, // pos x
+				g.drawString(b.getId(), (int) pos.getX() - g.getFontMetrics().stringWidth(b.getId()) / 2, // pos x
 						(int) pos.getY() - 8);
 
 				if (_showVectors) {
-					Vector2D force = pos.plus(b.getForce().direction().scale(30));
-					Vector2D velo = pos.plus(b.getVelocity().direction().scale(30));
-					drawLineWithArrow(g, (int) pos.getX(), (int) pos.getY(), (int) force.getX(), (int) force.getY(), 5,
-							5, Color.RED, Color.RED);
-					drawLineWithArrow(g, (int) pos.getX(), (int) pos.getY(), (int) velo.getX(), (int) velo.getY(), 5, 5,
-							Color.GREEN, Color.GREEN);
+					Vector2D _force = b.getForce().direction().scale(30);
+					Vector2D _velo = b.getVelocity().direction().scale(30);
+					Vector2D _vForce = new Vector2D(pos.getX() + _force.getX(), pos.getY() - _force.getY());
+					Vector2D _vVelo = new Vector2D(pos.getX() + _velo.getX(), pos.getY() - _velo.getY());
+					drawLineWithArrow(g, (int) pos.getX(), (int) pos.getY(), (int) _vForce.getX(), (int) _vForce.getY(),
+							5, 5, Color.RED, Color.RED);
+					drawLineWithArrow(g, (int) pos.getX(), (int) pos.getY(), (int) _vVelo.getX(), (int) _vVelo.getY(),
+							5, 5, Color.GREEN, Color.GREEN);
 				}
 			}
 		}
